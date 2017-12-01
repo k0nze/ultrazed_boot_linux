@@ -325,11 +325,20 @@ This tutorial shows you how to boot Linux from a SD card on the UltraZed-EG IOCC
 ## Boot the UltraZed-EG IOCC Board with SD card
 1. Make sure the board is turned off.
 2. Set the Ultrazed-EG into SD card boot _SW2[1:3]_ = OFF, ON, OFF, ON
+
+    ![sw2](./images/sw2.jpeg "SW2")
+
 3. Remove Jumper from _JP1_ and Put Jumper on _J1_ and _J2_ to 2 and 3
+
+    ![jp1_j1_j2](./images/jp1_j1_j2.jpeg "JP1, J1, and J2")
+
 4. Connect _JTAG_ and _UART_ USB cables with your PC and the Board.
 5. Connect an Ethernet cable with the board and your network.
 6. Insert the SD card into the SD card slot.
 7. Turn on the board.
+
+    ![whole_board](./images/whole_board.jpeg "Whole Board")
+
 8. Open a terminal and connect to the UART 1 with: `picocom /dev/ttyUSB1 -b 115200 -d 8 -y n -p 1`
 9. Now you should see the boot console.
 10. Login with user `root` and password `root`.
