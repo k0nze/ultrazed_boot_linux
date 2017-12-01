@@ -19,6 +19,7 @@ This tutorial shows you how to boot Linux from a SD card on the UltraZed-EG IOCC
 10. Choose _Edit IP_ and click _Next >_
 11. In the _Sources_ view double click on _axi\_test\_v1\_0\_S00\_AXI\_inst ..._
 12. Navigate to the following section in the verilog code:
+
 ```verilog
 // Implement memory mapped register select and read logic generation
 // Slave register read enable is asserted when valid address is available
@@ -106,7 +107,7 @@ end
   1. `petalinux-create --type apps --template c --name axidummy --enable` (caution: under line *\_* is not allowed in application names).
   2. Navigate to: `cd ${PETALINUX_PROJECT_ROOT}/project-spec/meta-user/recipes-apps/axidummy/files/`
   3. Add the following build rule to the `Makefile`:
-```make
+```
 .PHONY clean:
 	-rm -f $(APP) *.elf *.gdb *.o
 ```
@@ -214,7 +215,8 @@ the_ROM_image:
   2. Remove the dummy file: `rm project-spec/meta-user/recipes-apps/bitstream/files/bitstream`
   3. Copy the bitstream `.bin` file into the application files: `cp ${VIVADO_PROJECT_ROOT}/${VIVADO_PROJECT_NAME}.runs/impl_1/design_1_wrapper.bit.bin project-spec/meta-user/recipes-apps/bitstream/files`
   4. Replace everything from `SRC_URI...` in `project-spec/meta-user/recipes-apps/bitstream/bitstream.bb` with:
-  ```
+
+```
 SRC_URI = "file://design_1_wrapper.bit.bin \
 	"
 FILES_${PN} += "/lib/*"
@@ -225,12 +227,12 @@ do_install() {
 	    install -d ${D}/lib ${D}/lib/firmware
         install -m 0755 ${S}/design_1_wrapper.bit.bin ${D}/lib/firmware
 }
-  ```
+```
 
 15. Edit the device tree file 
   1. open `project-spec/meta-user/recipes-bsp/device-tree/files/system-user.dtsi`
   2. Navigate to `&sdhci0` and `&sdhci1` and add `disable-wp;` to both section:
-  ```
+```
 /* SD0 eMMC, 8-bit wide data bus */
 &sdhci0 {
 	status = "okay";
