@@ -20,41 +20,44 @@ This tutorial shows you how to boot Linux from a SD card on the UltraZed-EG IOCC
 11. In the _Sources_ view double click on _axi\_test\_v1\_0\_S00\_AXI\_inst ..._
 12. Navigate to the following section in the verilog code:
 
-```verilog
-// Implement memory mapped register select and read logic generation
-// Slave register read enable is asserted when valid address is available
-// and the slave is ready to accept the read address.
-assign slv_reg_rden = axi_arready & S_AXI_ARVALID & ~axi_rvalid;
-always @(*)
-begin
-      // Address decoding for reading registers
-      case ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )
-        2'h0   : reg_data_out <= slv_reg0;
-        2'h1   : reg_data_out <= slv_reg1;
-        2'h2   : reg_data_out <= slv_reg2;
-        2'h3   : reg_data_out <= slv_reg3;
-        default : reg_data_out <= 0;
-      endcase
-end
-```
-and replace it with:
-```verilog
-// Implement memory mapped register select and read logic generation
-// Slave register read enable is asserted when valid address is available
-// and the slave is ready to accept the read address.
-assign slv_reg_rden = axi_arready & S_AXI_ARVALID & ~axi_rvalid;
-always @(*)
-begin
-      // Address decoding for reading registers
-      case ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )
-        2'h0   : reg_data_out <= slv_reg0;
-        2'h1   : reg_data_out <= slv_reg0;
-        2'h2   : reg_data_out <= slv_reg2;
-        2'h3   : reg_data_out <= 32'hdeadbeef;
-        default : reg_data_out <= 0;
-      endcase
-end
-```
+    ```verilog
+    // Implement memory mapped register select and read logic generation
+    // Slave register read enable is asserted when valid address is available
+    // and the slave is ready to accept the read address.
+    assign slv_reg_rden = axi_arready & S_AXI_ARVALID & ~axi_rvalid;
+    always @(*)
+    begin
+        // Address decoding for reading registers
+        case ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )
+            2'h0   : reg_data_out <= slv_reg0;
+            2'h1   : reg_data_out <= slv_reg1;
+            2'h2   : reg_data_out <= slv_reg2;
+            2'h3   : reg_data_out <= slv_reg3;
+            default : reg_data_out <= 0;
+        endcase
+    end
+    ```
+    
+    and replace it with:
+
+    ```verilog
+    // Implement memory mapped register select and read logic generation
+    // Slave register read enable is asserted when valid address is available
+    // and the slave is ready to accept the read address.
+    assign slv_reg_rden = axi_arready & S_AXI_ARVALID & ~axi_rvalid;
+    always @(*)
+    begin
+        // Address decoding for reading registers
+        case ( axi_araddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )
+            2'h0   : reg_data_out <= slv_reg0;
+            2'h1   : reg_data_out <= slv_reg0;
+            2'h2   : reg_data_out <= slv_reg2;
+            2'h3   : reg_data_out <= 32'hdeadbeef;
+            default : reg_data_out <= 0;
+        endcase
+    end
+    ```
+    
 13. Go to _Package IP -> Packaging Steps -> File Groups_
 14. Click on _Merge changes from File Groups Wizard_
 15. Click on _Package IP -> Packaging Steps -> Review and Package_
@@ -84,9 +87,9 @@ end
 39. You may close Vivado now.
 
 ## Download the Board Support Package for the UltraZed IOCC
-* Go to: [http://ultrazed.org/support/design/17596/131](http://ultrazed.org/support/design/17596/131)
-* Download (login required) _UltraZed IO Carrier Card - PetaLinux 2017.2 Compressed BSP_
-* Unzip and copy to a desired location `cp uz3eg_iocc_2017_2.bsp ${BSPS}`
+1. Go to: [http://ultrazed.org/support/design/17596/131](http://ultrazed.org/support/design/17596/131)
+2. Download (login required) _UltraZed IO Carrier Card - PetaLinux 2017.2 Compressed BSP_
+3. Unzip and copy to a desired location `cp uz3eg_iocc_2017_2.bsp ${BSPS}`
 
 ## Creating a new Petalinux Project
 1. Open a Terminal with `bash` other shells may produce problems.
@@ -97,158 +100,165 @@ end
 6. Go into the Petalinux project directory: `cd ${PETALINUX_PROJECT_PARENT}/${PETALINUX_PROJECT_NAME}` (`PETALINUX_PROJECT_ROOT=${PETALINUX_PROJECT_PARENT}/${PETALINUX_PROJECT_NAME}`)
 7. Add the with Vivado generated hardware description file: `petalinux-config --get-hw-description ${VIVADO_PROJECT_ROOT}/${VIVADO_PROJECT_NAME}.sdk`
 8. In the config menu do the following (Exit a submenu or the whole configuration menu with [Esc]-[Esc]):
-  1. Go to _Subsystem AUTO Hardware Settings ---> Advanced bootable images storage Settings ---> boot image settings ---> image storage media --->_ select _primary sd_.
-  2. Go to _Subsystem AUTO Hardware Settings ---> Advanced bootable images storage Settings ---> kernel image settings ---> image storage media --->_ select _primary sd_.
-  3. Go to _Subsystem AUTO Hardware Settings ---> Advanced bootable images storage Settings ---> dtb image settings ---> image storage media --->_ select _primary sd_.
-  4. Go to _Image Packaging Configuration ---> Root filesystem type --->_ select _SD card_
-  5. Go to _Image Packaging Configuration ---> Device node of SD device --->_ type `/dev/mmcblk1p2`
+    1. Go to _Subsystem AUTO Hardware Settings ---> Advanced bootable images storage Settings ---> boot image settings ---> image storage media --->_ select _primary sd_.
+    2. Go to _Subsystem AUTO Hardware Settings ---> Advanced bootable images storage Settings ---> kernel image settings ---> image storage media --->_ select _primary sd_.
+    3. Go to _Subsystem AUTO Hardware Settings ---> Advanced bootable images storage Settings ---> dtb image settings ---> image storage media --->_ select _primary sd_.
+    4. Go to _Image Packaging Configuration ---> Root filesystem type --->_ select _SD card_
+    5. Go to _Image Packaging Configuration ---> Device node of SD device --->_ type `/dev/mmcblk1p2`
 9. Enable SSH server: `petalinux-config -c rootfs` go to _Filesystem Packages ---> console ---> network ---> dropbear_ select dropbear ([space]). Save and Exit.
 10. Create an application to interface the AXI4 IP (axi\_dummy) on the PL.
-  1. `petalinux-create --type apps --template c --name axidummy --enable` (caution: under line *\_* is not allowed in application names).
-  2. Navigate to: `cd ${PETALINUX_PROJECT_ROOT}/project-spec/meta-user/recipes-apps/axidummy/files/`
-  3. Add the following build rule to the `Makefile`:
-```
-.PHONY clean:
-	-rm -f $(APP) *.elf *.gdb *.o
-```
-  4. Replace the code in `axidummy.c` with:
-```c
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include <sys/mman.h>
-
-#define AXI_BASE_ADDR 0x80000000
-
-#define SLV_REG0_OFFSET (0*4)
-#define SLV_REG1_OFFSET (1*4)
-#define SLV_REG2_OFFSET (2*4)
-#define SLV_REG3_OFFSET (3*4)
-
-#define MAP_SIZE 4096UL
-#define MAP_MASK (MAP_SIZE - 1)
-
-int main(int argc, char **argv)
-{
-    printf("== START: AXI FPGA test ==\n");
-
-    int memfd;
-    void *mapped_base, *mapped_dev_base;
-    off_t dev_base = AXI_BASE_ADDR;
- 
-    memfd = open("/dev/mem", O_RDWR | O_SYNC);
-        if (memfd == -1) {
-        printf("Can't open /dev/mem.\n");
-        exit(0);
+    1. `petalinux-create --type apps --template c --name axidummy --enable` (caution: under line *\_* is not allowed in application names).
+    2. Navigate to: `cd ${PETALINUX_PROJECT_ROOT}/project-spec/meta-user/recipes-apps/axidummy/files/`
+    3. Add the following build rule to the `Makefile`:
+  
+    ```
+    .PHONY clean:
+    	-rm -f $(APP) *.elf *.gdb *.o
+    ```
+    
+    4. Replace the code in `axidummy.c` with:
+    
+    ```c
+    #include <stdio.h>
+    #include <stdint.h>
+    #include <stdlib.h>
+    #include <fcntl.h>
+    #include <sys/mman.h>
+    
+    #define AXI_BASE_ADDR 0x80000000
+    
+    #define SLV_REG0_OFFSET (0*4)
+    #define SLV_REG1_OFFSET (1*4)
+    #define SLV_REG2_OFFSET (2*4)
+    #define SLV_REG3_OFFSET (3*4)
+    
+    #define MAP_SIZE 4096UL
+    #define MAP_MASK (MAP_SIZE - 1)
+    
+    int main(int argc, char **argv)
+    {
+        printf("== START: AXI FPGA test ==\n");
+    
+        int memfd;
+        void *mapped_base, *mapped_dev_base;
+        off_t dev_base = AXI_BASE_ADDR;
+     
+        memfd = open("/dev/mem", O_RDWR | O_SYNC);
+            if (memfd == -1) {
+            printf("Can't open /dev/mem.\n");
+            exit(0);
+        }
+    
+        printf("/dev/mem opened.\n");
+    
+        // Map one page of memory into user space such that the device is in that page, but it may not
+        // be at the start of the page.
+        mapped_base = mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, memfd, dev_base & ~MAP_MASK);
+            if (mapped_base == (void *) -1) {
+            printf("Can't map the memory to user space.\n");
+            exit(0);
+        }
+        printf("Memory mapped at address %p.\n", mapped_base);
+    
+        // get the address of the device in user space which will be an offset from the base
+        // that was mapped as memory is mapped at the start of a page
+        mapped_dev_base = mapped_base + (dev_base & MAP_MASK);
+    
+        // write to slv_reg0
+        *((volatile uint32_t *) (mapped_dev_base + SLV_REG0_OFFSET)) = 42;
+        // write to slv_reg1
+        *((volatile uint32_t *) (mapped_dev_base + SLV_REG1_OFFSET)) = 23;
+        // write to slv_reg2
+        *((volatile uint32_t *) (mapped_dev_base + SLV_REG2_OFFSET)) = 84;
+        // write to slv_reg3
+        *((volatile uint32_t *) (mapped_dev_base + SLV_REG3_OFFSET)) = 46;
+    
+    
+        // read from slv_reg0
+        printf("0x%08x\n", *((volatile uint32_t *) (mapped_dev_base + SLV_REG0_OFFSET)));
+        // read from slv_reg1
+        printf("0x%08x\n", *((volatile uint32_t *) (mapped_dev_base + SLV_REG1_OFFSET)));
+        // read from slv_reg2
+        printf("0x%08x\n", *((volatile uint32_t *) (mapped_dev_base + SLV_REG2_OFFSET)));
+        // read from slv_reg3
+        printf("0x%08x\n", *((volatile uint32_t *) (mapped_dev_base + SLV_REG3_OFFSET)));
+    
+    
+        // unmap the memory before exiting
+        if (munmap(mapped_base, MAP_SIZE) == -1) {
+            printf("Can't unmap memory from user space.\n");
+            exit(0);
+        }
+    
+        close(memfd);
+    
+        printf("== STOP ==\n");
+    
+        return 0;
     }
-
-    printf("/dev/mem opened.\n");
-
-    // Map one page of memory into user space such that the device is in that page, but it may not
-    // be at the start of the page.
-    mapped_base = mmap(0, MAP_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, memfd, dev_base & ~MAP_MASK);
-        if (mapped_base == (void *) -1) {
-        printf("Can't map the memory to user space.\n");
-        exit(0);
-    }
-    printf("Memory mapped at address %p.\n", mapped_base);
-
-    // get the address of the device in user space which will be an offset from the base
-    // that was mapped as memory is mapped at the start of a page
-    mapped_dev_base = mapped_base + (dev_base & MAP_MASK);
-
-    // write to slv_reg0
-    *((volatile uint32_t *) (mapped_dev_base + SLV_REG0_OFFSET)) = 42;
-    // write to slv_reg1
-    *((volatile uint32_t *) (mapped_dev_base + SLV_REG1_OFFSET)) = 23;
-    // write to slv_reg2
-    *((volatile uint32_t *) (mapped_dev_base + SLV_REG2_OFFSET)) = 84;
-    // write to slv_reg3
-    *((volatile uint32_t *) (mapped_dev_base + SLV_REG3_OFFSET)) = 46;
-
-
-    // read from slv_reg0
-    printf("0x%08x\n", *((volatile uint32_t *) (mapped_dev_base + SLV_REG0_OFFSET)));
-    // read from slv_reg1
-    printf("0x%08x\n", *((volatile uint32_t *) (mapped_dev_base + SLV_REG1_OFFSET)));
-    // read from slv_reg2
-    printf("0x%08x\n", *((volatile uint32_t *) (mapped_dev_base + SLV_REG2_OFFSET)));
-    // read from slv_reg3
-    printf("0x%08x\n", *((volatile uint32_t *) (mapped_dev_base + SLV_REG3_OFFSET)));
-
-
-    // unmap the memory before exiting
-    if (munmap(mapped_base, MAP_SIZE) == -1) {
-        printf("Can't unmap memory from user space.\n");
-        exit(0);
-    }
-
-    close(memfd);
-
-    printf("== STOP ==\n");
-
-    return 0;
-}
-```
-  5. go back to project root: `cd ${PETALINUX_PROJECT_ROOT}`
+    ```
+    
+    5. go back to project root: `cd ${PETALINUX_PROJECT_ROOT}`
+  
 11. Build project for the first time: `petalinux-build`
 12. Package the project for the first time: `petalinux-package --boot --format BIN --fsbl images/linux/zynqmp_fsbl.elf --u-boot images/linux/u-boot.elf --fpga ${VIVADO_PROJECT_ROOT}/${VIVADO_PROJECT_NAME}.runs/impl_1/design_1_wrapper.bit --force`
 13. Convert the bitstream `.bit` file into a `.bin` file.
-  1. create the file `${PETALINUX_PROJECT_ROOT}/build/bootgen.own.bif` with the following content:
-```
-the_ROM_image:
-{
-	[fsbl_config] a53_x64
-	[bootloader] ${PETALINUX_PROJECT_ROOT}/images/linux/zynqmp_fsbl.elf
-	[pmufw_image] ${PETALINUX_PROJECT_ROOT}/images/linux/pmufw.elf 
-	[destination_device=pl] ${VIVADO_PROJECT_ROOT}/${VIVADO_PROJECT_NAME}.runs/impl_1/design_1_wrapper.bit
-	[destination_cpu=a53-0, exception_level=el-3, trustzone] ${PETALINUX_PROJECT_ROOT}/images/linux/bl31.elf
-	[destination_cpu=a53-0, exception_level=el-2] ${PETALINUX_PROJECT_ROOT}/linux/u-boot.elf
-}
-```
-  2. Run from the `${PETALINUX_PROJECT_ROOT}` the following: `bootgen -image build/bootgen.bif -arch zynqmp -process_bitstream bin`
-  3. This generates the `.bin` file at: `${VIVADO_PROJECT_ROOT}/${VIVADO_PROJECT_NAME}.runs/impl_1/design_1_wrapper.bit.bin`
+    1. create the file `${PETALINUX_PROJECT_ROOT}/build/bootgen.own.bif` with the following content:
+    
+    ```
+    the_ROM_image:
+    {
+    	[fsbl_config] a53_x64
+    	[bootloader] ${PETALINUX_PROJECT_ROOT}/images/linux/zynqmp_fsbl.elf
+    	[pmufw_image] ${PETALINUX_PROJECT_ROOT}/images/linux/pmufw.elf 
+    	[destination_device=pl] ${VIVADO_PROJECT_ROOT}/${VIVADO_PROJECT_NAME}.runs/impl_1/design_1_wrapper.bit
+    	[destination_cpu=a53-0, exception_level=el-3, trustzone] ${PETALINUX_PROJECT_ROOT}/images/linux/bl31.elf
+    	[destination_cpu=a53-0, exception_level=el-2] ${PETALINUX_PROJECT_ROOT}/linux/u-boot.elf
+    }
+    ```
+    2. Run from the `${PETALINUX_PROJECT_ROOT}` the following: `bootgen -image build/bootgen.bif -arch zynqmp -process_bitstream bin`
+    3. This generates the `.bin` file at: `${VIVADO_PROJECT_ROOT}/${VIVADO_PROJECT_NAME}.runs/impl_1/design_1_wrapper.bit.bin`
 
 14. Create an application to install the bitstream into the root filesystem.
-  1. `petalinux-create --type apps --template install --name bitstream --enable`
-  2. Remove the dummy file: `rm project-spec/meta-user/recipes-apps/bitstream/files/bitstream`
-  3. Copy the bitstream `.bin` file into the application files: `cp ${VIVADO_PROJECT_ROOT}/${VIVADO_PROJECT_NAME}.runs/impl_1/design_1_wrapper.bit.bin project-spec/meta-user/recipes-apps/bitstream/files`
-  4. Replace everything from `SRC_URI...` in `project-spec/meta-user/recipes-apps/bitstream/bitstream.bb` with:
+    1. `petalinux-create --type apps --template install --name bitstream --enable`
+    2. Remove the dummy file: `rm project-spec/meta-user/recipes-apps/bitstream/files/bitstream`
+    3. Copy the bitstream `.bin` file into the application files: `cp ${VIVADO_PROJECT_ROOT}/${VIVADO_PROJECT_NAME}.runs/impl_1/design_1_wrapper.bit.bin project-spec/meta-user/recipes-apps/bitstream/files`
+    4. Replace everything from `SRC_URI...` in `project-spec/meta-user/recipes-apps/bitstream/bitstream.bb` with:
 
-```
-SRC_URI = "file://design_1_wrapper.bit.bin \
-	"
-FILES_${PN} += "/lib/*"
-
-S = "${WORKDIR}"
-
-do_install() {
-	    install -d ${D}/lib ${D}/lib/firmware
-        install -m 0755 ${S}/design_1_wrapper.bit.bin ${D}/lib/firmware
-}
-```
+    ```
+    SRC_URI = "file://design_1_wrapper.bit.bin \
+    	"
+    FILES_${PN} += "/lib/*"
+    
+    S = "${WORKDIR}"
+    
+    do_install() {
+    	    install -d ${D}/lib ${D}/lib/firmware
+            install -m 0755 ${S}/design_1_wrapper.bit.bin ${D}/lib/firmware
+    }
+    ```
 
 15. Edit the device tree file 
-  1. open `project-spec/meta-user/recipes-bsp/device-tree/files/system-user.dtsi`
-  2. Navigate to `&sdhci0` and `&sdhci1` and add `disable-wp;` to both section:
-```
-/* SD0 eMMC, 8-bit wide data bus */
-&sdhci0 {
-	status = "okay";
-	bus-width = <8>;
-	max-frequency = <50000000>;
-    disable-wp;
-};
-
-/* SD1 with level shifter */
-&sdhci1 {
-	status = "okay";
-	max-frequency = <50000000>;
-	no-1-8-v;	/* for 1.0 silicon */
-    disable-wp;
-};
-``` 
+    1. open `project-spec/meta-user/recipes-bsp/device-tree/files/system-user.dtsi`
+    2. Navigate to `&sdhci0` and `&sdhci1` and add `disable-wp;` to both sections:
+    
+    ```
+    /* SD0 eMMC, 8-bit wide data bus */
+    &sdhci0 {
+    	status = "okay";
+    	bus-width = <8>;
+    	max-frequency = <50000000>;
+        disable-wp;
+    };
+    
+    /* SD1 with level shifter */
+    &sdhci1 {
+    	status = "okay";
+    	max-frequency = <50000000>;
+    	no-1-8-v;	/* for 1.0 silicon */
+        disable-wp;
+    };
+    ``` 
 
 16. Clean up the project: `petalinux-build -x distclean`
 17. Build the project for a second time: `petalinux-build`
@@ -261,16 +271,18 @@ do_install() {
 4. Run `sudo fdisk /dev/sdX`
 5. Press `d` to delete and [Enter] to delete all existing partitions
 6. Press `p` to confirm that all partitions are gone. It should look like this:
-```
-Disk /dev/sdX: 7948 MB, 7948206080 bytes, 15523840 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk label type: dos
-Disk identifier: 0x00000000
 
-   Device Boot      Start         End      Blocks   Id  System
-```
+    ```
+    Disk /dev/sdX: 7948 MB, 7948206080 bytes, 15523840 sectors
+    Units = sectors of 1 * 512 = 512 bytes
+    Sector size (logical/physical): 512 bytes / 512 bytes
+    I/O size (minimum/optimal): 512 bytes / 512 bytes
+    Disk label type: dos
+    Disk identifier: 0x00000000
+    
+       Device Boot      Start         End      Blocks   Id  System
+    ```
+
 7. Press `n` to create a new partition
 8. Press `p` to make the new partition primary
 9. Press [Enter] to accept the default (_1_)
@@ -284,18 +296,20 @@ Disk identifier: 0x00000000
 17. Press `a` to make the first partition the boot partition
 18. Type `1` to select the first partition as the boot partition and press [Enter]
 19. Press `p` to print the new partition table. It should look like this:
-```
-Disk /dev/sdX: 7948 MB, 7948206080 bytes, 15523840 sectors
-Units = sectors of 1 * 512 = 512 bytes
-Sector size (logical/physical): 512 bytes / 512 bytes
-I/O size (minimum/optimal): 512 bytes / 512 bytes
-Disk label type: dos
-Disk identifier: 0x00000000
 
-   Device Boot      Start         End      Blocks   Id  System
-/dev/sdX1   *        2048     2099199     1048576   83  Linux
-/dev/sdX2         2099200    15523839     6712320   83  Linux
-```
+    ```
+    Disk /dev/sdX: 7948 MB, 7948206080 bytes, 15523840 sectors
+    Units = sectors of 1 * 512 = 512 bytes
+    Sector size (logical/physical): 512 bytes / 512 bytes
+    I/O size (minimum/optimal): 512 bytes / 512 bytes
+    Disk label type: dos
+    Disk identifier: 0x00000000
+    
+       Device Boot      Start         End      Blocks   Id  System
+    /dev/sdX1   *        2048     2099199     1048576   83  Linux
+    /dev/sdX2         2099200    15523839     6712320   83  Linux
+    ```
+    
 20. Press `w` to write the new partition table to the SD card
 21. Format the first partition as FAT32 with: `sudo mkfs.vfat -F 32 -n boot /dev/sdX1`
 22. Format the second partition as ext4 with: `sudo mkfs.ext4 -L root /dev/sdX2`
@@ -320,17 +334,19 @@ Disk identifier: 0x00000000
 9. Now you should see the boot console.
 10. Login with user `root` and password `root`.
 11. After login type: `ifconfig` to get the IP of the board. The output should look like this:
-```
-eth0      Link encap:Ethernet  HWaddr 00:0A:35:00:22:01  
-          inet addr:${ULTARZED_IP}  Bcast:10.42.0.255  Mask:255.255.255.0
-          inet6 addr: fe80::20a:35ff:fe00:2201%4879704/64 Scope:Link
-          UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
-          RX packets:3 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:13 errors:0 dropped:0 overruns:0 carrier:0
-          collisions:0 txqueuelen:1000 
-          RX bytes:702 (702.0 B)  TX bytes:1705 (1.6 KiB)
-          Interrupt:30 
-```
+
+    ```
+    eth0      Link encap:Ethernet  HWaddr 00:0A:35:00:22:01  
+              inet addr:${ULTARZED_IP}  Bcast:10.42.0.255  Mask:255.255.255.0
+              inet6 addr: fe80::20a:35ff:fe00:2201%4879704/64 Scope:Link
+              UP BROADCAST RUNNING MULTICAST  MTU:1500  Metric:1
+              RX packets:3 errors:0 dropped:0 overruns:0 frame:0
+              TX packets:13 errors:0 dropped:0 overruns:0 carrier:0
+              collisions:0 txqueuelen:1000 
+              RX bytes:702 (702.0 B)  TX bytes:1705 (1.6 KiB)
+              Interrupt:30 
+    ```
+    
 12. You can now connect via ssh from your PC with: `ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@${ULTARZED_IP}`
 13. You can copy files via ssh with: `scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no ${SOURCE_FILE} root@${ULTRAZED_IP}:${TARGET}`
 14. To program the PL (FPGA) type: `echo design_1_wrapper.bit.bin > /sys/class/fpga_manager/fpga0/firmware`
