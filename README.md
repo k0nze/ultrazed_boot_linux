@@ -341,7 +341,7 @@ This tutorial shows you how to boot Linux from a SD card on the UltraZed-EG IOCC
 
 8. Open a terminal and connect to the UART 1 with: `picocom /dev/ttyUSB1 -b 115200 -d 8 -y n -p 1`
 9. Now you should see the boot console.
-10. Login with user `root` and password `root`.
+10. Login with user `root` and password `root`. (if installed the Ubuntu RootFS login with user: `zynqmp` and password: `zynqmp`)
 11. After login type: `ifconfig` to get the IP of the board. The output should look like this:
 
     ```
