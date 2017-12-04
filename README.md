@@ -387,50 +387,69 @@ sudo unsquashfs -f -d ${ROOTFS_DIR} ${DOWNLOADS_DIR}/xenial-server-arm64.squashf
 ```
 3. Add a user with sudo permissions:
     1. Edit `${ROOTFS_DIR}/etc/passwd` and add the following line:
-    ```
-    zynqmp:x:1337:1337:,,,:/home/zynqmp:/bin/bash
-    ```
+    
+        ```
+        zynqmp:x:1337:1337:,,,:/home/zynqmp:/bin/bash
+        ```
+    
     2. Edit `${ROOTFS_DIR}/etc/shadow` and add the following line:
-    ```
-    zynqmp:$6$4YGUIFdh$z9VoX0koXXlnGGgkQgu4XlmVRwhB3rGVorCQ4nl.UHPtiRsJJ/4zjuRWOEdQ3q.CSr8eArdTEWMFSPrcwjE4G1:17504:0:99999:7:::
-    ```
+    
+        ```
+        zynqmp:$6$4YGUIFdh$z9VoX0koXXlnGGgkQgu4XlmVRwhB3rGVorCQ4nl.UHPtiRsJJ/4zjuRWOEdQ3q.CSr8eArdTEWMFSPrcwjE4G1:17504:0:99999:7:::
+        ```
+    
     3. Edit `${ROOTFS_DIR}/etc/gshadow` and add the following line:
-    ```
-    zynqmp:!::
-    ```
+    
+        ```
+        zynqmp:!::
+        ```
+    
     4. Edit `${ROOTFS_DIR}/etc/group` and add the following line:
-    ```
-    zynqmp:x:1337:
-    ```
-    and edit the the line `sudo:x:27:` to look like this:
-    ``` 
-    sudo:x:27:zynqmp
-    ``` 
+    
+        ```
+        zynqmp:x:1337:
+        ```
+    
+        and edit the the line `sudo:x:27:` to look like this:
+    
+        ``` 
+        sudo:x:27:zynqmp
+        ``` 
+    
     5. Create a home directory for the user `zynqmp` with: `sudo mkdir ${ROOTFS_DIR}/home/zynqmp`
+    
 4. Edit `${ROOTFS_DIR}/etc/hostname` to look like this:
-``` 
-ultrazed
-```
+
+    ``` 
+    ultrazed
+    ```
+
 5. Edit `${ROOTFS_DIR}/etc/hosts` to look like this:
-``` 
-127.0.0.1	localhost
-127.0.1.1	ultrazed
-``` 
+
+    ``` 
+    127.0.0.1	localhost
+    127.0.1.1	ultrazed
+    ``` 
+
 6. Edit `${ROOTFS_DIR}/etc/apt/sources.list` to look like this:
-```
-deb http://ports.ubuntu.com/ubuntu-ports/ xenial main
-deb http://ports.ubuntu.com/ubuntu-ports/ xenial universe
-deb http://ports.ubuntu.com/ubuntu-ports/ xenial multiverse
-deb http://ports.ubuntu.com/ubuntu-ports/ xenial-security main
-deb http://ports.ubuntu.com/ubuntu-ports/ xenial-updates main
-deb http://ports.ubuntu.com/ubuntu-ports/ xenial-updates universe
-deb http://ports.ubuntu.com/ubuntu-ports/ xenial-updates multiverse
-```
+
+    ```
+    deb http://ports.ubuntu.com/ubuntu-ports/ xenial main
+    deb http://ports.ubuntu.com/ubuntu-ports/ xenial universe
+    deb http://ports.ubuntu.com/ubuntu-ports/ xenial multiverse
+    deb http://ports.ubuntu.com/ubuntu-ports/ xenial-security main
+    deb http://ports.ubuntu.com/ubuntu-ports/ xenial-updates main
+    deb http://ports.ubuntu.com/ubuntu-ports/ xenial-updates universe
+    deb http://ports.ubuntu.com/ubuntu-ports/ xenial-updates multiverse
+    ```
+
 7. Edit `${ROOTFS_DIR}/etc/fstab` to look like this:
-```
-/dev/mmcblk1p2	/	auto	errors=remount-ro	0	1
-/dev/mmcblk1p1	/boot	auto	defaults		0	2
-```
+
+    ```
+    /dev/mmcblk1p2	/	auto	errors=remount-ro	0	1
+    /dev/mmcblk1p1	/boot	auto	defaults		0	2
+    ```
+
 8. Insert the SD card into your PC
 9. Copy `BOOT.BIN`, `image.ub`, and `system.dtb` to _BOOT_ partition of SD card: `cp ${PETALINUX_PROJECT_ROOT}/images/linux/{BOOT.BIN,image.ub,system.dtb} ${BOOT_MOUNT_POINT}`
 10. Copy `rootfs.cpio.gz` to _root_ partition of SD card: `sudo cp ${PETALINUX_PROJECT_ROOT}/images/linux/rootfs.cpio.gz ${ROOT_MOUNT_POINT}`
