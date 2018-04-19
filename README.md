@@ -216,7 +216,7 @@ This tutorial shows you how to boot Linux from a SD card on the UltraZed-EG IOCC
     	[destination_cpu=a53-0, exception_level=el-2] ${PETALINUX_PROJECT_ROOT}/images/linux/u-boot.elf
     }
     ```
-    2. Run from the `${PETALINUX_PROJECT_ROOT}` the following: `bootgen -image build/bootgen.bif -arch zynqmp -process_bitstream bin`
+    2. Run from the `${PETALINUX_PROJECT_ROOT}` the following: `bootgen -image build/bootgen.own.bif -arch zynqmp -process_bitstream bin`
     3. This generates the `.bin` file at: `${VIVADO_PROJECT_ROOT}/${VIVADO_PROJECT_NAME}.runs/impl_1/design_1_wrapper.bit.bin`
 
 14. Create an application to install the bitstream into the root filesystem.
@@ -364,7 +364,7 @@ This tutorial shows you how to boot Linux from a SD card on the UltraZed-EG IOCC
 ## Updating the Hardware Description/PL Design
 If you update the block design in Vivado and generate a new bitstream the following steps have to be done to update your Petalinux project:
 1. Update the hardware defintion file in Petalinux: `petalinux-config --get-hw-description ${VIVADO_PROJECT_ROOT}/${VIVADO_PROJECT_NAME}.sdk`
-2. Generate a new bitstream `.bin` file: `${PETALINUX_PROJECT_ROOT}` the following: `bootgen -image build/bootgen.bif -arch zynqmp -process_bitstream bin`
+2. Generate a new bitstream `.bin` file: `${PETALINUX_PROJECT_ROOT}` the following: `bootgen -image build/bootgen.own.bif -arch zynqmp -process_bitstream bin`
 3. Copy the new bitstream `.bin` file into the application files: `cp ${VIVADO_PROJECT_ROOT}/${VIVADO_PROJECT_NAME}.runs/impl_1/design_1_wrapper.bit.bin project-spec/meta-user/recipes-apps/bitstream/files`
 4. Clean up the project: `petalinux-build -x distclean` 
 5. Build the project: `petalinux-build`
